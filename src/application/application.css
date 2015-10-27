@@ -1,0 +1,7 @@
+#GDP_Chart-content {
+    -fx-padding: 50px; 
+}
+#GDP_Chart-legend {
+   -fx-background-color:  transparent;
+   -fx-padding: 20px;
+}
