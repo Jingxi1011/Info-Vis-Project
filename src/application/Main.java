@@ -20,18 +20,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.*;
 import javafx.scene.shape.*;
 import javafx.stage.Stage;
-import application.Model;
+//import application.Model;
 import application.Range;
 import application.Data;
 
 public class Main extends Application {
-	/*private Model model 					= null;
-	 public void paint(Graphics g){
-		  System.out.println(model.getDim());
-	}*/
-	
-	// read GDP data from file
-	//public ArrayList<String> labels = new ArrayList<String>();  //not used, import label for xAxis
 	public ArrayList<Data> GDP_list  = new ArrayList<Data>();
 	public ArrayList<Data> pop_list  = new ArrayList<Data>();
 	public ArrayList<Data> QuarterGDP_list  = new ArrayList<Data>();
@@ -43,18 +36,16 @@ public class Main extends Application {
 	public ArrayList<XYChart.Series<String, Number>> QuarterGDP_series_list = new ArrayList<XYChart.Series<String, Number>>();
 	public List<Integer> selected_list = new ArrayList<Integer>();
 	
-	public MouseEvent t;
 	public GridPane LineChart = new GridPane();
 	public int province_num = 27;
 	public String[] names = new String[province_num];
 	public int year_ini = 2010;
 	public int year_num = 5;
 	public int c = 0;
-	public int linker = 0;
 	public Text linechart_title = new Text();
+	public Object previous_target = new Object();
+	public boolean same_as_previous = false;
 
-	
-  
 	public void start(Stage stage) {
 	  stage.setTitle("Application for Population&GDP Statistics of Chinese Provinces");
 	  
@@ -95,32 +86,59 @@ public class Main extends Application {
 
 	  // Province Buttons Set Up
 	  ToggleButton btn_shandong 	= new ToggleButton("Shandong", new ImageView(new Image("shandong.png")));
+	  btn_shandong.setTooltip(new Tooltip("Capital City:Jinan\n" + "Area:157,100 km^2\n" + "Area Rank:20th"));
 	  ToggleButton btn_guangdong 	= new ToggleButton("Guangdong", new ImageView(new Image("guangdong.png")));
+	  btn_guangdong.setTooltip(new Tooltip("Capital City:Guangzhou\n" + "Area:179,800 km^2\n" + "Area Rank:15th"));
 	  ToggleButton btn_hebei 		= new ToggleButton("Hebei", new ImageView(new Image("hebei.png")));
+	  btn_hebei.setTooltip(new Tooltip("Capital City:Baoding\n" + "Area:187,700 km^2\n" + "Area Rank:12th"));
 	  ToggleButton btn_henan 		= new ToggleButton("Henan", new ImageView(new Image("henan.png")));
+	  btn_henan.setTooltip(new Tooltip("Capital City:Kaifeng\n" + "Area:167,000 km^2\n" + "Area Rank:17th"));
 	  ToggleButton btn_hubei 		= new ToggleButton("Hubei", new ImageView(new Image("hubei.png")));
+	  btn_hubei.setTooltip(new Tooltip("Capital City:Wuhan\n" + "Area:185,900 km^2\n" + "Area Rank:13th"));
 	  ToggleButton btn_hunan 		= new ToggleButton("Hunan", new ImageView(new Image("hunan.png")));
+	  btn_hunan.setTooltip(new Tooltip("Capital City:Changsha\n" + "Area:210,000 km^2\n" + "Area Rank:10th"));
 	  ToggleButton btn_jiangsu 		= new ToggleButton("Jiangsu", new ImageView(new Image("jiangsu.png")));
+	  btn_jiangsu.setTooltip(new Tooltip("Capital City:Nanning\n" + "Area:102,600 km^2\n" + "Area Rank:24th"));
 	  ToggleButton btn_liaoning 	= new ToggleButton("Liaoning", new ImageView(new Image("liaoning.png")));
+	  btn_liaoning.setTooltip(new Tooltip("Capital City:Shenyang\n" + "Area:145,900 km^2\n" + "Area Rank:21st"));
 	  ToggleButton btn_anhui 		= new ToggleButton("Anhui", new ImageView(new Image("anhui.png")));
+	  btn_anhui.setTooltip(new Tooltip("Capital City:Hefei\n" + "Area:139,600 km^2\n" + "Area Rank:22nd"));
 	  ToggleButton btn_fujian 		= new ToggleButton("Fujian", new ImageView(new Image("fujian.png")));
-	  ToggleButton btn_zhejiang 	= new ToggleButton("Zhejiang", new ImageView(new Image("zhejiang.png")));  
+	  btn_fujian.setTooltip(new Tooltip("Capital City:Fuzhou\n" + "Area:121,400 km^2\n" + "Area Rank:23rd"));
+	  ToggleButton btn_zhejiang 	= new ToggleButton("Zhejiang", new ImageView(new Image("zhejiang.png")));
+	  btn_zhejiang.setTooltip(new Tooltip("Capital City:Hangzhou\n" + "Area:101,800 km^2\n" + "Area Rank:25th"));
 	  ToggleButton btn_gansu 		= new ToggleButton("Gansu", new ImageView(new Image("gansu.png")));
-	  ToggleButton btn_guangxi 		= new ToggleButton("Guangxi", new ImageView(new Image("guangxi.png")));	  
-	  ToggleButton btn_hainan 		= new ToggleButton("Hainan", new ImageView(new Image("hainan.png")));	  
+	  btn_gansu.setTooltip(new Tooltip("Capital City:Lanzhou\n" + "Area:425,800 km^2\n" + "Area Rank:7th"));
+	  ToggleButton btn_guangxi 		= new ToggleButton("Guangxi", new ImageView(new Image("guangxi.png")));
+	  btn_guangxi.setTooltip(new Tooltip("Capital City:Nanning\n" + "Area:236,700 km^2\n" + "Area Rank:9th"));
+	  ToggleButton btn_hainan 		= new ToggleButton("Hainan", new ImageView(new Image("hainan.png")));
+	  btn_hainan.setTooltip(new Tooltip("Capital City:Haikou\n" + "Area:35,400 km^2\n" + "Area Rank:27th"));
 	  ToggleButton btn_heilongjiang = new ToggleButton("Heilongjiang", new ImageView(new Image("heilongjiang.png")));	  
+	  btn_heilongjiang.setTooltip(new Tooltip("Capital City:Harbin\n" + "Area:454,800 km^2\n" + "Area Rank:6th"));
 	  ToggleButton btn_jiangxi 		= new ToggleButton("Jiangxi", new ImageView(new Image("jiangxi.png")));
+	  btn_jiangxi.setTooltip(new Tooltip("Capital City:Nanchang\n" + "Area:166,900 km^2\n" + "Area Rank:18th"));
 	  ToggleButton btn_jilin 		= new ToggleButton("Jilin", new ImageView(new Image("jilin.png")));
+	  btn_jilin.setTooltip(new Tooltip("Capital City:Changchun\n" + "Area:187,400 km^2\n" + "Area Rank:14th"));
 	  ToggleButton btn_neimenggu 	= new ToggleButton("Neimenggu", new ImageView(new Image("neimenggu.png")));
+	  btn_neimenggu.setTooltip(new Tooltip("Capital City:Hohhot\n" + "Area:1,183,000 km^2\n" + "Area Rank:3rd"));
 	  ToggleButton btn_ningxia 		= new ToggleButton("Ningxia", new ImageView(new Image("ningxia.png")));
+	  btn_ningxia.setTooltip(new Tooltip("Capital City:Yinchuan\n" + "Area:66,000 km^2\n" + "Area Rank:26th"));
 	  ToggleButton btn_qinghai 		= new ToggleButton("Qinghai", new ImageView(new Image("qinghai.png")));
+	  btn_qinghai.setTooltip(new Tooltip("Capital City:Baoding\n" + "Area:720,000 km^2\n" + "Area Rank:4th"));
 	  ToggleButton btn_Shanxi 		= new ToggleButton("Shanxi", new ImageView(new Image("shanxi.png")));
+	  btn_Shanxi.setTooltip(new Tooltip("Capital City:Taiyuan\n" + "Area:156,000 km^2\n" + "Area Rank:19th"));
 	  ToggleButton btn_shanxi 		= new ToggleButton("shanxi", new ImageView(new Image("shanxi1.png")));
+	  btn_shanxi.setTooltip(new Tooltip("Capital City:Xi'an\n" + "Area:205,800 km^2\n" + "Area Rank:11th"));
 	  ToggleButton btn_xinjiang 	= new ToggleButton("Xinjiang", new ImageView(new Image("xinjiang.png")));
+	  btn_xinjiang.setTooltip(new Tooltip("Capital City:Ur¨¹mqi\n" + "Area:1,664,900 km^2\n" + "Area Rank:1st"));
 	  ToggleButton btn_xizang 		= new ToggleButton("Xizang", new ImageView(new Image("xizang.png")));
+	  btn_xizang.setTooltip(new Tooltip("Capital City:Lhasa\n" + "Area:1,228,400 km^2\n" + "Area Rank:2nd"));
 	  ToggleButton btn_yunnan 		= new ToggleButton("Yunnan", new ImageView(new Image("yunnan.png")));
+	  btn_yunnan.setTooltip(new Tooltip("Capital City:Kunming\n" + "Area:394,000 km^2\n" + "Area Rank:8th"));
 	  ToggleButton btn_sichuan 		= new ToggleButton("Sichuan", new ImageView(new Image("sichuan.png")));
+	  btn_sichuan.setTooltip(new Tooltip("Capital City:Chengdu\n" + "Area:485,000 km^2\n" + "Area Rank:5th"));
 	  ToggleButton btn_guizhou 		= new ToggleButton("Guizhou", new ImageView(new Image("guizhou.png")));
+	  btn_guizhou.setTooltip(new Tooltip("Capital City:Guiyang\n" + "Area:176,167 km^2\n" + "Area Rank:16th"));
 
 	  int col = 0;
 	  int row = 2;
@@ -169,12 +187,12 @@ public class Main extends Application {
 			});	
 		}
 	    
-	// data import 
+	  		// data import 
 			pop_importValues();
 		  	GDP_importValues();
 		  	QuarterGDP_importValues();
 		  	
-	// Map Image
+		  	// Map Image
 			ImageView mapView = new ImageView(new Image("map.png"));
 			img_selection.add(mapView,0,2,1,5);
 			GridPane.setMargin(mapView, new Insets(5, 30, 5, 10));
@@ -186,6 +204,7 @@ public class Main extends Application {
 			GDP_yAxis.setLabel("GDP (hundred million yuan)");
 			
 			final LineChart<String, Number> GDP_Chart = new LineChart<String, Number>(GDP_xAxis, GDP_yAxis);
+			GDP_Chart.setPadding(new Insets(10,0,0,0));
 			GDP_Chart.setPrefWidth(1000);
 			GDP_Chart.setPrefHeight(630);
 
@@ -209,6 +228,7 @@ public class Main extends Application {
 	        series4.setName("Fourth Quarter");
 	        // add data to chart
 	        QuarterGDP_Chart.getData().addAll(series1,series2,series3,series4);
+	        QuarterGDP_scene_chart.setCursor(Cursor.DEFAULT);
 
 	        // Main Title
 			Text title = new Text("Population & GDP Statistics of Chinese Provinces");
@@ -337,14 +357,35 @@ public class Main extends Application {
 		button_gdp.setOnAction(new EventHandler<ActionEvent>(){
 		  public void handle(ActionEvent event) {
 			  if ((linechart_title.getText()).equals("Population Statistics")){
-			  GDP_Chart.getData().clear();
-			  GDP_yAxis.setLabel("GDP (hundred million yuan)");
-			  GDP_xAxis.setLabel("Year");
-			  setTitle_GDP();
-			  //GDP_Chart.getData().retainAll();
-			  for(int i = 0; i != selected_list.size(); i++){
-				  GDP_Chart.getData().add(GDP_series_list.get(selected_list.get(i)));
-			  }
+				  GDP_Chart.getData().clear();
+				  GDP_yAxis.setLabel("GDP (hundred million yuan)");
+				  GDP_xAxis.setLabel("Year");
+				  setTitle_GDP();
+				  //GDP_Chart.getData().retainAll();
+				  for(int i = 0; i != selected_list.size(); i++){
+					  GDP_Chart.getData().add(GDP_series_list.get(selected_list.get(i)));
+					  GDP_series_list.get(selected_list.get(i)).getNode().setOnMouseEntered(onMouseEnteredSeriesListener);
+					  GDP_series_list.get(selected_list.get(i)).getNode().setOnMouseExited(onMouseExitedSeriesListener);
+					  GDP_series_list.get(selected_list.get(i)).getNode().setOnMouseClicked(new EventHandler<MouseEvent>()
+				        {
+				            public void handle(MouseEvent t) {
+				            	for (int k = 0; k != selected_list.size(); k++){
+				            		Object obj = t.getTarget();
+				            		if(GDP_series_list.get(selected_list.get(k)).getNode() == obj)
+				            		{
+				            			for(int j=0 ; j<17; j+=4){
+											  series1.getData().add(QuarterGDP_series_list.get(selected_list.get(k)).getData().get(j));
+											  series2.getData().add(QuarterGDP_series_list.get(selected_list.get(k)).getData().get(j+1));
+											  series3.getData().add(QuarterGDP_series_list.get(selected_list.get(k)).getData().get(j+2));
+											  series4.getData().add(QuarterGDP_series_list.get(selected_list.get(k)).getData().get(j+3));
+										}
+						            	QuarterGDP_title.setText(names[selected_list.get(k)]+" GDP Season Statistics");
+										stage.setScene(QuarterGDP_scene_chart);
+				            		}
+				            	}
+				            }
+				        });
+				  }
 			  }
 		  }
 		});
@@ -364,11 +405,6 @@ public class Main extends Application {
 		// return to GDP chart
 		button_return1.setOnAction(new EventHandler<ActionEvent>() {
 			  public void handle(ActionEvent event) {
-				 for (Series s: Arrays.asList(series1,series2,series3,series4)){
-					 s.getData().clear(); 
-				 }
-				 //QuarterGDP_Chart.getData().clear();
-				 
 				 stage.setScene(GDP_scene_chart);
 			  }
 		});
@@ -377,59 +413,54 @@ public class Main extends Application {
 		button_check.setOnAction(new EventHandler<ActionEvent>() {
 			  public void handle(ActionEvent event) {
 				  if (selected_list.size()!=0){
-				  // clear button selected state
-				  for (ToggleButton b : Arrays.asList(btn_anhui, btn_fujian, btn_gansu, btn_guangdong, btn_guangxi, btn_guizhou, 
-				    		btn_hainan, btn_hebei, btn_heilongjiang, btn_henan,btn_hubei,btn_hunan, btn_jiangsu,btn_jiangxi,btn_jilin, 
-				    		btn_liaoning, btn_neimenggu, btn_ningxia, btn_qinghai , btn_shandong, btn_Shanxi, btn_shanxi,
-				    		btn_sichuan, btn_xinjiang, btn_xizang, btn_yunnan, btn_zhejiang)){
-					   if (b.isSelected()){
-						   b.setSelected(false);
-					   }       
-				  }
+					// clear button selected state
+					  for (ToggleButton b : Arrays.asList(btn_anhui, btn_fujian, btn_gansu, btn_guangdong, btn_guangxi, btn_guizhou, 
+					    		btn_hainan, btn_hebei, btn_heilongjiang, btn_henan,btn_hubei,btn_hunan, btn_jiangsu,btn_jiangxi,btn_jilin, 
+					    		btn_liaoning, btn_neimenggu, btn_ningxia, btn_qinghai , btn_shandong, btn_Shanxi, btn_shanxi,
+					    		btn_sichuan, btn_xinjiang, btn_xizang, btn_yunnan, btn_zhejiang)){
+						   if (b.isSelected()){
+							   b.setSelected(false);
+						   }       
+					  }
 				  
-				  for(int i = 0; i != selected_list.size(); i++){
-				  linker = selected_list.get(i);
-				  //System.out.println(linker);
-				  //test = GDP_series_list.get(linker);
-				  GDP_Chart.getData().add(GDP_series_list.get(linker));
-				  GDP_series_list.get(linker).getNode().setOnMouseEntered(onMouseEnteredSeriesListener);
-				  GDP_series_list.get(linker).getNode().setOnMouseClicked(new EventHandler<MouseEvent>()
-			        {
-			            public void handle(MouseEvent t) {
-			            	((Node)(t.getSource())).setCursor(Cursor.DEFAULT);
-			            	for (int k = 0; k != selected_list.size(); k++){
-			            		Object obj = t.getTarget();
-			            		if(GDP_series_list.get(selected_list.get(k)).getNode() == obj)
-			            		{
-			            			for(int j=0 ; j<17; j+=4){
-										  series1.getData().add(QuarterGDP_series_list.get(selected_list.get(k)).getData().get(j));
-										  series2.getData().add(QuarterGDP_series_list.get(selected_list.get(k)).getData().get(j+1));
-										  series3.getData().add(QuarterGDP_series_list.get(selected_list.get(k)).getData().get(j+2));
-										  series4.getData().add(QuarterGDP_series_list.get(selected_list.get(k)).getData().get(j+3));
-									}
-					            	QuarterGDP_title.setText(names[selected_list.get(k)]+" GDP Season Statistics");
-					            	//GDP_series_list.get(linker).getNode().setOnMouseEntered(null);
-									stage.setScene(QuarterGDP_scene_chart);
-			            		}
-			            	}
-			            }
-			        });
-				  GDP_series_list.get(linker).getNode().setOnMouseExited(onMouseExitedSeriesListener);
+					  for(int i = 0; i != selected_list.size(); i++){
+						  GDP_Chart.getData().add(GDP_series_list.get(selected_list.get(i)));
+						  GDP_series_list.get(selected_list.get(i)).getNode().setOnMouseEntered(onMouseEnteredSeriesListener);
+						  GDP_series_list.get(selected_list.get(i)).getNode().setOnMouseExited(onMouseExitedSeriesListener);
+						  GDP_series_list.get(selected_list.get(i)).getNode().setOnMouseClicked(new EventHandler<MouseEvent>()
+					        {
+					            public void handle(MouseEvent t) {
+					            	for (int k = 0; k != selected_list.size(); k++){
+					            		Object obj = t.getTarget();
+					            		if(GDP_series_list.get(selected_list.get(k)).getNode() == obj)
+					            		{
+					            			for(int j=0 ; j<17; j+=4){
+												  series1.getData().add(QuarterGDP_series_list.get(selected_list.get(k)).getData().get(j));
+												  series2.getData().add(QuarterGDP_series_list.get(selected_list.get(k)).getData().get(j+1));
+												  series3.getData().add(QuarterGDP_series_list.get(selected_list.get(k)).getData().get(j+2));
+												  series4.getData().add(QuarterGDP_series_list.get(selected_list.get(k)).getData().get(j+3));
+											}
+							            	QuarterGDP_title.setText(names[selected_list.get(k)]+" GDP Season Statistics");
+							            	
+											stage.setScene(QuarterGDP_scene_chart);
+											
+					            		}
+					            	}
+					            }
+					        });
+					  }
+					  stage.setScene(GDP_scene_chart);
 				  }
-				  //System.out.println(series1.getData());
-				  // set Scene
-				  stage.setScene(GDP_scene_chart);
-			  }
-			  else{
-				  empty_alert.showAndWait();
-			  }
+				  else{
+					  empty_alert.showAndWait();
+				  }
 			  }
 		});
 		
 		// reset button in selection scene
 		button_reset.setOnAction(new EventHandler<ActionEvent>() {
 			  public void handle(ActionEvent event) {
-				// clear button selected state
+				  // clear button selected state
 				  for (ToggleButton b : Arrays.asList(btn_anhui, btn_fujian, btn_gansu, btn_guangdong, btn_guangxi, btn_guizhou, 
 				    		btn_hainan, btn_hebei, btn_heilongjiang, btn_henan,btn_hubei,btn_hunan, btn_jiangsu,btn_jiangxi,btn_jilin, 
 				    		btn_liaoning, btn_neimenggu, btn_ningxia, btn_qinghai , btn_shandong, btn_Shanxi, btn_shanxi,
@@ -442,6 +473,7 @@ public class Main extends Application {
 			  }
 		});
 
+		// Set Scene
 		stage.setScene(scene_selection);
 		stage.show();
   }
@@ -464,19 +496,13 @@ public class Main extends Application {
         launch(args);
     }
 	
-	/** Line Chart Mouse Event Handler **/
+	/** Mouse Event Handler **/
 	// Enter
     EventHandler<MouseEvent> onMouseEnteredSeriesListener = 
             (MouseEvent event) -> {
-                ((Node)(event.getSource())).setCursor(Cursor.HAND);
-                
-               
+                ((Node)(event.getSource())).setCursor(Cursor.HAND);         
     };
-    // Click
-    EventHandler<MouseEvent> onMouseClickedSeriesListener = 
-            (MouseEvent event) -> {
-                
-    };
+
     // Exit
     EventHandler<MouseEvent> onMouseExitedSeriesListener = 
             (MouseEvent event) -> {
@@ -532,20 +558,19 @@ public class Main extends Application {
 				for(int i = 0; i != 5; ++i)
 			  	{	
 					final XYChart.Data<String,Number> data = new XYChart.Data<String, Number>(Integer.toString(year_ini + i), GDP_list.get(n).getValue(i));
-					//data1.setNode(new HoveredThresholdNode(i+year_ini,GDP_list.get(n).getValue(i)));
+					data.setNode(new HoveredThresholdNode(i+year_ini,GDP_list.get(n).getValue(i)));
 					GDP_series_list.get(n).getData().add(data);
-			  	}			
+			  	}
 			}
 	}
 	
- // import population values
+    // import population values
 	public void pop_importValues(){
 		File file = new File("population.txt");
     try {
    	 String thisLine = null;
    	 BufferedReader bt = new BufferedReader(new FileReader(file));
         try {
-			//Import Labels
 			thisLine = bt.readLine();
 			
 			// Prepare Ranges
@@ -583,16 +608,15 @@ public class Main extends Application {
     
     // Line Chart
 		for (int n = 0; n < province_num; n++) {
-				XYChart.Series<String, Number> pop_series_name = new XYChart.Series<String, Number>();
-				pop_series_name.setName("population_" + names[n]);
-				pop_series_list.add(pop_series_name);
-				for(int i = 0; i != 5; ++i)
-			  	{	
-					final XYChart.Data<String,Number> data = new XYChart.Data<String, Number>(Integer.toString(year_ini + i), pop_list.get(n).getValue(i));
-					//data.setNode(new HoveredThresholdNode(i+year_ini,pop_list.get(n).getValue(i)));
-					pop_series_list.get(n).getData().add(data);
-			  	}
-				
+			XYChart.Series<String, Number> pop_series_name = new XYChart.Series<String, Number>();
+			pop_series_name.setName("population_" + names[n]);
+			pop_series_list.add(pop_series_name);
+			for(int i = 0; i != 5; ++i)
+		  	{	
+				final XYChart.Data<String,Number> data = new XYChart.Data<String, Number>(Integer.toString(year_ini + i), pop_list.get(n).getValue(i));
+				data.setNode(new HoveredThresholdNode(i+year_ini,pop_list.get(n).getValue(i)));
+				pop_series_list.get(n).getData().add(data);
+		  	}	
 		}
 	}
 	
@@ -603,44 +627,40 @@ public class Main extends Application {
 			String thisLine = null;
 			BufferedReader bt = new BufferedReader(new FileReader(file));
 			try {
-				//Import Labels
-				thisLine = bt.readLine();
-			 
-			  // Prepare Ranges
-			 double QuarterGDP_lowRanges [] = new double[province_num+1];
-			 for (int i = 0; i < QuarterGDP_lowRanges.length; i++) 
-				 QuarterGDP_lowRanges[i] = Double.MAX_VALUE;
-						 
-			 double QuarterGDP_highRanges [] = new double[province_num+1];
-		     for (int i = 0; i < QuarterGDP_highRanges.length; i++) 
-		    	 QuarterGDP_highRanges[i] = Double.MIN_VALUE;
-		     
-		     int line_num = 0;
-				 while ((thisLine = bt.readLine()) != null) { 
-					 String values [] = thisLine.split(";");
-					 double dValues [] = new double[values.length -1];
-				
-					 for (int j =1; j < values.length; j++) {
-						 
-						 dValues[j-1] = Double.parseDouble(values[j]);
-						 
-						 if (dValues[j-1] <  QuarterGDP_lowRanges[line_num]) QuarterGDP_lowRanges[line_num] = dValues[j-1];
-						 if (dValues[j-1] >  QuarterGDP_highRanges[line_num]) QuarterGDP_highRanges[line_num] = dValues[j-1];
-					 }
-				 QuarterGDP_list.add(new Data(dValues, values[0]));
-				 //names[line_num] = values[0];
-				 line_num ++;	 
-  			  }
-			  for (int i = 0; i < line_num; i++) {
-				  QuarterGDP_ranges.add(new Range(QuarterGDP_lowRanges[i],QuarterGDP_highRanges[i]));
-			  } 
-			  //System.out.println(QuarterGDP_ranges);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} 
-	} catch (FileNotFoundException e) {
+				 thisLine = bt.readLine();
+
+				 double QuarterGDP_lowRanges [] = new double[province_num+1];
+				 for (int i = 0; i < QuarterGDP_lowRanges.length; i++) 
+					 QuarterGDP_lowRanges[i] = Double.MAX_VALUE;
+							 
+				 double QuarterGDP_highRanges [] = new double[province_num+1];
+			     for (int i = 0; i < QuarterGDP_highRanges.length; i++) 
+			    	 QuarterGDP_highRanges[i] = Double.MIN_VALUE;
+			     
+			     int line_num = 0;
+					 while ((thisLine = bt.readLine()) != null) { 
+						 String values [] = thisLine.split(";");
+						 double dValues [] = new double[values.length -1];
+					
+						 for (int j =1; j < values.length; j++) {
+							 
+							 dValues[j-1] = Double.parseDouble(values[j]);
+							 
+							 if (dValues[j-1] <  QuarterGDP_lowRanges[line_num]) QuarterGDP_lowRanges[line_num] = dValues[j-1];
+							 if (dValues[j-1] >  QuarterGDP_highRanges[line_num]) QuarterGDP_highRanges[line_num] = dValues[j-1];
+						 }
+					 QuarterGDP_list.add(new Data(dValues, values[0]));
+					 line_num ++;	 
+	  			  }
+				  for (int i = 0; i < line_num; i++) {
+					  QuarterGDP_ranges.add(new Range(QuarterGDP_lowRanges[i],QuarterGDP_highRanges[i]));
+				  } 
+			} catch (IOException e) {
+				e.printStackTrace();
+			} 
+		} catch (FileNotFoundException e) {
 		e.printStackTrace();
-	}
+		}
 
 		for (int n = 0; n < province_num; n++) 
 		{		
@@ -655,33 +675,27 @@ public class Main extends Application {
 					year_counter++;
 				}
 				final XYChart.Data<String,Number> data = new XYChart.Data<String, Number>(Integer.toString(year_ini + year_counter), QuarterGDP_list.get(n).getValue(i));
-				//data.setNode(new HoveredThresholdNode(i+year_ini,pop_list.get(n).getValue(i)));
 				QuarterGDP_series_list.get(n).getData().add(data);
-		  	}
-								
+		  	}						
 		}
-		//System.out.println(QuarterGDP_series_list.get(0).getData().get(0));
 	}
 }
     
-	/** a node which displays a value on hover, but is otherwise empty */
-	  /*class HoveredThresholdNode extends StackPane {
+	/** Hover Effect for Mouse **/
+	  class HoveredThresholdNode extends StackPane {
 	    HoveredThresholdNode(int priorValue, double value) {
-	      setPrefSize(15, 15);
-
+	      setPrefSize(13,13);
 	      final Label label = createDataThresholdLabel(priorValue, value);
-
 	      setOnMouseEntered(new EventHandler<MouseEvent>() {
-	        @Override public void handle(MouseEvent mouseEvent) {
-	          getChildren().setAll(label);
-	          setCursor(Cursor.NONE);
-	          toFront();
+	    	  public void handle(MouseEvent mouseEvent) {
+		          getChildren().setAll(label);
+		          setCursor(Cursor.HAND);
+		          toFront();
 	        }
 	      });
 	      setOnMouseExited(new EventHandler<MouseEvent>() {
-	        @Override public void handle(MouseEvent mouseEvent) {
-	          getChildren().clear();
-	          setCursor(Cursor.CROSSHAIR);
+	    	  public void handle(MouseEvent mouseEvent) {
+		          getChildren().clear();
 	        }
 	      });
 	    }
@@ -702,7 +716,34 @@ public class Main extends Application {
 	      label.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
 	      return label;
 	    }
-	  }*/
-
-  
+	  }
+  /*GDP_series_list.get(selected_list.get(i)).getNode().setOnMouseClicked(new EventHandler<MouseEvent>()
+					        {
+					            public void handle(MouseEvent t) {
+					            	if (t.getTarget() == previous_target){
+				            			stage.setScene(QuarterGDP_scene_chart);
+				            			same_as_previous = true;
+					            	}
+					            	if (same_as_previous == false){
+						            	for (int k = 0; k != selected_list.size(); k++){
+						            		if(GDP_series_list.get(selected_list.get(k)).getNode() == t.getTarget())
+						            		{
+						            			for (Series<String, Number> s: Arrays.asList(series1,series2,series3,series4)){
+													 s.getData().remove(true); 
+												 }
+						            			for(int j=0 ; j<17; j+=4){
+													  series1.getData().add(QuarterGDP_series_list.get(selected_list.get(k)).getData().get(j));
+													  series2.getData().add(QuarterGDP_series_list.get(selected_list.get(k)).getData().get(j+1));
+													  series3.getData().add(QuarterGDP_series_list.get(selected_list.get(k)).getData().get(j+2));
+													  series4.getData().add(QuarterGDP_series_list.get(selected_list.get(k)).getData().get(j+3));
+												}
+								            	QuarterGDP_title.setText(names[selected_list.get(k)]+" GDP Season Statistics");
+												stage.setScene(QuarterGDP_scene_chart);
+						            		}
+						            		
+						            	}
+						            	previous_target = t.getTarget();
+						            }
+					            }         
+					        }); */
 
